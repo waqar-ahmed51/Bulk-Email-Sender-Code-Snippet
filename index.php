@@ -1,29 +1,37 @@
-<?php
-echo "Test";
-function executeFunctionInNewWindow($functionName, $n)
-{
-    // Generate JavaScript code for opening a new window, executing the function, and waiting for 2 seconds.
-    $javascriptCode = <<<JS
-    function openAndExecute() {
-        var win = window.open('', '_blank');
-        win.document.write('<html><body><script type="text/javascript">{$functionName}(); setTimeout(function() { window.close(); }, 2000);</script></body></html>');
-        win.document.close();
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Function Execution</title>
+</head>
+<body>
+    <h1>Function Execution in New Windows and Tabs</h1>
+    <?php
+    // Function to be executed in the new windows or tabs.
+    function yourFunctionName() {
+        // Replace this with the actual function logic you want to execute.
+        $message = "Function executed with same window/tab at: " . date("Y-m-d H:i:s") . PHP_EOL;
+
+        // Write the message to a file named "log.txt".
+        file_put_contents("log.txt", $message, FILE_APPEND);
     }
-JS;
 
-    // Generate JavaScript code for repeating the process for n times.
-    for ($i = 0; $i < $n; $i++) {
-        $javascriptCode .= "setTimeout(openAndExecute, " . ($i * 2500) . ");";
+    // The number of times to repeat the function execution.
+    $repeatTimes = 100;
+
+    // Get the current execution count from the URL query parameter (if any).
+    $executionCount = isset($_GET['count']) ? intval($_GET['count']) : 0;
+
+    // Execute the function if the current execution count is less than the desired repeat times.
+    if ($executionCount < $repeatTimes) {
+        // Delay for 2 seconds using JavaScript before executing the function.
+        echo '<script type="text/javascript">';
+        echo 'setTimeout(function() {';
+        echo 'window.location.href = "index.php?count=' . ($executionCount + 1) . '";';
+        echo '}, 2000);';
+        echo '</script>';
+
+        yourFunctionName();
     }
-
-    // Output the generated JavaScript code.
-    echo "<script type='text/javascript'>$javascriptCode</script>";
-}
-
-// Usage: Call the function with the desired function name and the number of times to repeat.
-$functionName = 'yourFunctionName'; // Replace 'yourFunctionName' with the actual function name to be executed in the new windows.
-$repeatTimes = 5; // Replace 5 with the desired number of repetitions.
-
-executeFunctionInNewWindow($functionName, $repeatTimes);
-
-?>
+    ?>
+</body>
+</html>
